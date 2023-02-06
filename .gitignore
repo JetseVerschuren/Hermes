@@ -8,3 +8,6 @@ yarn.lock
 # folders
 build
 node_modules
+
+# JetBrains crap
+.idea
