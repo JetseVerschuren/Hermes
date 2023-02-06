@@ -3,14 +3,9 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import { Canvas } from "./canvas.js";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const discordToken: string = process.env.DISCORD_TOKEN ?? "";
-const canvasToken: string = process.env.CANVAS_TOKEN ?? "";
-if (!discordToken) throw new Error("No Discord token specified!");
-if (!canvasToken) throw new Error("No Canvas token specified!");
+import { DataSource } from "typeorm";
+import { Announcement } from "./entities/Announcement.js";
+import { canvasToken, databasePath, discordToken } from "./config.js";
 
 export const bot = new Client({
   // To use only guild command
@@ -34,9 +29,22 @@ export const bot = new Client({
   },
 });
 
-const canvas = new Canvas(bot, canvasToken);
+const dataSource = new DataSource({
+  type: "sqlite",
+  database: databasePath ?? "database.sqlite",
+  synchronize: true,
+  entities: [Announcement],
+});
+
+const canvas = new Canvas(
+  bot,
+  canvasToken,
+  dataSource.getRepository(Announcement)
+);
 
 bot.once("ready", async () => {
+  await dataSource.initialize();
+
   // Make sure all guilds are cached
   // await bot.guilds.fetch();
 

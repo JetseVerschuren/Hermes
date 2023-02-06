@@ -24,6 +24,8 @@
     "discordx": "^11.6.0",
     "node-fetch": "^3.3.0",
     "node-html-markdown": "^1.3.0",
+    "sqlite3": "^5.1.4",
+    "typeorm": "^0.3.11",
     "yarn": "^1.22.19"
   },
   "devDependencies": {
