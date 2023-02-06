@@ -1,7 +1,7 @@
 type GuildConfig = {
   [guildId: string]: {
     announcementChannel: string;
-    logChannel: string;
+    logChannel?: string;
   };
 };
 

@@ -1,7 +1,8 @@
 import { Client } from "discordx";
-import { courseConfig } from "./config.js";
+import { courseConfig, guildConfig } from "./config.js";
 import { EmbedBuilder, TextChannel } from "discord.js";
 import fetch from "node-fetch";
+import { htmlToMarkdown } from "./htmlToMarkdown.js";
 
 type Announcement = {
   id: number;
@@ -25,27 +26,35 @@ export class Canvas {
   }
 
   async onInterval() {
-    for (const [courseId, { guilds }] of Object.entries(courseConfig)) {
-      // TODO: Fetch announcements
-      const announcements: Announcement[] = [];
-      // TODO: Filter out old announcements
-      for (const announcement of announcements) {
-        // TODO: Post announcement in the configured guilds
-      }
+    // TODO: Get date of last announcement
+    const announcements = await this.fetchAnnouncements(
+      Object.keys(courseConfig)
+    );
+
+    for (const announcement of announcements) {
+      const guilds = courseConfig[announcement.contextCode]?.guilds;
+      if (!guilds) continue;
+      // TODO: Check if it's an old announcement
+      await this.publishMessage(
+        announcement,
+        guilds
+          .map((guild) => guildConfig[guild]?.announcementChannel)
+          .filter((channel): channel is string => !!channel)
+      );
     }
   }
 
-  async publishMessage(announcement: any, channels: string[]) {
+  async publishMessage(announcement: Announcement, channels: string[]) {
     // TODO: The announcement can contain attachments, perhaps send to to DC as well
-    // TODO: Format the Canvas announcement according to DC markdown
     const embed = new EmbedBuilder()
       .setAuthor({
         name: announcement.author.displayName,
         iconURL: announcement.author.avatarImageUrl,
       })
       .setTitle(announcement.title)
-      .setDescription(announcement.message)
-      .setURL(announcement.url);
+      .setDescription(htmlToMarkdown(announcement.message))
+      .setURL(announcement.url)
+      .setTimestamp(announcement.postedAt);
 
     for (const channelId of channels) {
       const channel = await this.bot.channels.fetch(channelId);
