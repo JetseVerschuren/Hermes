@@ -19,7 +19,7 @@ type CourseConfig = {
 };
 
 export const courseConfig: CourseConfig = {
-  "12067": {
+  "course_12067": {
     guilds: ["1072100983989076098"],
   },
 };
