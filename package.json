@@ -21,7 +21,9 @@
   "dependencies": {
     "@discordx/importer": "^1.1.10",
     "discord.js": "^14.7.1",
-    "discordx": "^11.6.0"
+    "discordx": "^11.6.0",
+    "node-fetch": "^3.3.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
