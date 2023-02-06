@@ -2,6 +2,15 @@ import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
+import { Canvas } from "./canvas.js";
+import dotenv from "dotenv";
+
+const discordToken: string = process.env.DISCORD_TOKEN ?? "";
+const canvasToken: string = process.env.DISCORD_TOKEN ?? "";
+if (!discordToken) throw new Error("No Discord token specified!");
+if (!canvasToken) throw new Error("No Canvas token specified!");
+
+dotenv.config();
 
 export const bot = new Client({
   // To use only guild command
@@ -25,6 +34,8 @@ export const bot = new Client({
   },
 });
 
+const canvas = new Canvas(bot, canvasToken);
+
 bot.once("ready", async () => {
   // Make sure all guilds are cached
   // await bot.guilds.fetch();
@@ -39,6 +50,8 @@ bot.once("ready", async () => {
   //  await bot.clearApplicationCommands(
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );
+
+  canvas.ready();
 
   console.log("Bot started");
 });
@@ -59,13 +72,13 @@ async function run() {
   // The following syntax should be used in the ECMAScript environment
   await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
 
-  // Let's start the bot
-  if (!process.env.BOT_TOKEN) {
-    throw Error("Could not find BOT_TOKEN in your environment");
-  }
+  // // Let's start the bot
+  // if (!process.env.BOT_TOKEN) {
+  //   throw Error("Could not find BOT_TOKEN in your environment");
+  // }
 
   // Log in with your bot token
-  await bot.login(process.env.BOT_TOKEN);
+  await bot.login(discordToken);
 }
 
 run();
