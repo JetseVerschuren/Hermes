@@ -5,12 +5,12 @@ import { Client } from "discordx";
 import { Canvas } from "./canvas.js";
 import dotenv from "dotenv";
 
+dotenv.config();
+
 const discordToken: string = process.env.DISCORD_TOKEN ?? "";
-const canvasToken: string = process.env.DISCORD_TOKEN ?? "";
+const canvasToken: string = process.env.CANVAS_TOKEN ?? "";
 if (!discordToken) throw new Error("No Discord token specified!");
 if (!canvasToken) throw new Error("No Canvas token specified!");
-
-dotenv.config();
 
 export const bot = new Client({
   // To use only guild command
