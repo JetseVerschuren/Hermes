@@ -54,7 +54,7 @@ export class Canvas {
     // TODO: Better validate shape of announcements
     const json = (await response.json()) as any;
 
-    if (json.message) {
+    if (!(json instanceof Array)) {
       console.error(
         `INVALID RESPONSE FROM API. Request: ${url.toString()}, response: `,
         response
