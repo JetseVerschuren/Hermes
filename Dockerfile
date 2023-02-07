@@ -5,17 +5,17 @@ FROM node:lts-alpine as build-runner
 WORKDIR /tmp/app
 
 # Move package.json
-COPY package.json .
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install --frozen-lockfile
 
 # Move source files
 COPY src ./src
 COPY tsconfig.json   .
 
 # Build project
-RUN npm run build
+RUN yarn build
 
 ## production runner
 FROM node:lts-alpine as prod-runner
@@ -24,10 +24,10 @@ FROM node:lts-alpine as prod-runner
 WORKDIR /app
 
 # Copy package.json from build-runner
-COPY --from=build-runner /tmp/app/package.json /app/package.json
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install --omit=dev
+RUN yarn install --production --frozen-lockfile
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
