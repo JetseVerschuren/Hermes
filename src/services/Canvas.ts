@@ -1,10 +1,11 @@
 import { Client } from "discordx";
-import { courseConfig, guildConfig } from "./config.js";
+import { courseConfig, guildConfig } from "../config.js";
 import { EmbedBuilder, TextChannel } from "discord.js";
 import fetch from "node-fetch";
-import { htmlToMarkdown } from "./htmlToMarkdown.js";
-import { IsNull, Not, Repository } from "typeorm";
-import { Announcement } from "./entities/Announcement.js";
+import { htmlToMarkdown } from "../htmlToMarkdown.js";
+import { Inject, Service } from "typedi";
+import { AnnouncementService } from "./AnnouncementService.js";
+import { Config } from "./Config.js";
 
 type AnnouncementObject = {
   id: number;
@@ -19,39 +20,31 @@ type AnnouncementObject = {
   contextCode: string;
 };
 
+@Service()
 export class Canvas {
-  private interval: NodeJS.Timer | null = null;
+  @Inject()
+  private announcementRepository!: AnnouncementService;
 
-  constructor(
-    private bot: Client,
-    private token: string,
-    private announcementRepository: Repository<Announcement>
-  ) {}
+  @Inject()
+  private config!: Config;
+
+  @Inject("bot")
+  private bot!: Client;
 
   ready() {
-    // this.interval = setInterval(this.onInterval.bind(this), 60 * 1000);
-    this.onInterval();
+    setInterval(this.onInterval.bind(this), 60 * 1000);
   }
 
   async onInterval() {
-    const lastMessageDate = (
-      await this.announcementRepository.findOne({
-        where: { postedAt: Not(IsNull()) },
-        order: { postedAt: "ASC" },
-      })
-    )?.postedAt;
+    console.log("Checking Canvas announcements");
     const announcements = await this.fetchAnnouncements(
       Object.keys(courseConfig),
-      lastMessageDate
+      await this.announcementRepository.lastMessageDate()
     );
 
     for (const announcement of announcements) {
       // Canvas should already filter out old announcements, but let's double-check
-      if (
-        (await this.announcementRepository.findOneBy({
-          id: announcement.id,
-        })) !== null
-      ) {
+      if (await this.announcementRepository.exists(announcement.id)) {
         console.log(`Duplicate announcement: ${announcement.id}`);
         continue;
       }
@@ -112,7 +105,7 @@ export class Canvas {
     // Only include published announcements, just in case the token has those permissions
     params.append("active_only", "true");
     if (startDate) params.append("start_date", startDate.toISOString());
-    params.append("access_token", this.token);
+    params.append("access_token", this.config.getCanvasToken());
 
     const response = await fetch(url.toString(), { method: "GET", body: null });
 
