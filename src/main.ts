@@ -6,6 +6,7 @@ import { Canvas } from "./canvas.js";
 import { DataSource } from "typeorm";
 import { Announcement } from "./entities/Announcement.js";
 import { canvasToken, databasePath, discordToken } from "./config.js";
+import ChatBot from "./chatbot.js";
 
 export const bot = new Client({
   // To use only guild command

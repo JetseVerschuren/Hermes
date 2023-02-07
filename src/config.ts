@@ -31,13 +31,15 @@ dotenv.config();
 function getEnvVar(key: string, fallback: string): string;
 function getEnvVar(key: string): string;
 
-function getEnvVar(key: string, fallback = undefined): string {
+function getEnvVar(key: string, fallback?: string): string {
   const val = process.env[key];
   if (val) return val;
   if (fallback) return fallback;
   throw new Error(`No ${key} specified!`);
 }
 
+
 export const discordToken = getEnvVar("DISCORD_TOKEN");
 export const canvasToken = getEnvVar("CANVAS_TOKEN");
+export const openaiToken = getEnvVar("OPENAI_TOKEN");
 export const databasePath = getEnvVar("DATABASE_PATH", "database.sqlite");
