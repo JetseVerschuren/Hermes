@@ -38,6 +38,8 @@ function getEnvVar(key: string, fallback?: string): string {
   throw new Error(`No ${key} specified!`);
 }
 
+
 export const discordToken = getEnvVar("DISCORD_TOKEN");
 export const canvasToken = getEnvVar("CANVAS_TOKEN");
+export const openaiToken = getEnvVar("OPENAI_TOKEN");
 export const databasePath = getEnvVar("DATABASE_PATH", "database.sqlite");
