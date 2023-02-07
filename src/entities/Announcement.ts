@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryColumn } from "typeorm";
 
-// @ts-ignore strictPropertyInitialization
 @Entity()
 export class Announcement {
   @PrimaryColumn()
