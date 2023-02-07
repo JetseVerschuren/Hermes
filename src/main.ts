@@ -43,8 +43,6 @@ const canvas = new Canvas(
 );
 
 bot.once("ready", async () => {
-  await dataSource.initialize();
-
   // Make sure all guilds are cached
   // await bot.guilds.fetch();
 
@@ -73,6 +71,8 @@ bot.on("messageCreate", (message: Message) => {
 });
 
 async function run() {
+  await dataSource.initialize();
+
   // The following syntax should be used in the commonjs environment
   //
   // await importx(__dirname + "/{events,commands}/**/*.{ts,js}");
