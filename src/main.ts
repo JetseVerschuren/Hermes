@@ -1,11 +1,11 @@
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
-import { Client } from "discordx";
-import { Canvas } from "./canvas.js";
-import { DataSource } from "typeorm";
-import { Announcement } from "./entities/Announcement.js";
-import { canvasToken, databasePath, discordToken } from "./config.js";
+import { Client, DIService, typeDiDependencyRegistryEngine } from "discordx";
+import { Canvas } from "./services/Canvas.js";
+import { discordToken } from "./config.js";
+import { Container, Service } from "typedi";
+import { Database } from "./services/Database.js";
 
 export const bot = new Client({
   // To use only guild command
@@ -29,18 +29,9 @@ export const bot = new Client({
   },
 });
 
-const dataSource = new DataSource({
-  type: "sqlite",
-  database: databasePath,
-  synchronize: true,
-  entities: [Announcement],
-});
-
-const canvas = new Canvas(
-  bot,
-  canvasToken,
-  dataSource.getRepository(Announcement)
-);
+DIService.engine = typeDiDependencyRegistryEngine
+  .setService(Service)
+  .setInjector(Container);
 
 bot.once("ready", async () => {
   // Make sure all guilds are cached
@@ -57,6 +48,10 @@ bot.once("ready", async () => {
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );
 
+  // Make sure this is executed after the importx
+  Container.set("bot", bot);
+  const canvas = DIService.engine.getService(Canvas);
+  if (!canvas) throw new Error("Failed to start canvas service");
   canvas.ready();
 
   console.log("Bot started");
@@ -71,14 +66,18 @@ bot.on("messageCreate", (message: Message) => {
 });
 
 async function run() {
-  await dataSource.initialize();
+  const database = DIService.engine.getService(Database);
+   if (!database) throw new Error("Failed to start Database");
+  await database.initialize();
 
   // The following syntax should be used in the commonjs environment
   //
   // await importx(__dirname + "/{events,commands}/**/*.{ts,js}");
 
   // The following syntax should be used in the ECMAScript environment
-  await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
+  await importx(
+    `${dirname(import.meta.url)}/{events,commands,services}/**/*.{ts,js}`
+  );
 
   // // Let's start the bot
   // if (!process.env.BOT_TOKEN) {
