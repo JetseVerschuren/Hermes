@@ -31,7 +31,7 @@ dotenv.config();
 function getEnvVar(key: string, fallback: string): string;
 function getEnvVar(key: string): string;
 
-function getEnvVar(key: string, fallback = undefined): string {
+function getEnvVar(key: string, fallback?: string): string {
   const val = process.env[key];
   if (val) return val;
   if (fallback) return fallback;
