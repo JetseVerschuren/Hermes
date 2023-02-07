@@ -28,15 +28,16 @@ export const courseConfig: CourseConfig = {
 
 dotenv.config();
 
-function getEnvVar(key: string, required: false): string | undefined;
+function getEnvVar(key: string, fallback: string): string;
 function getEnvVar(key: string): string;
 
-function getEnvVar(key: string, required = true): string | undefined {
+function getEnvVar(key: string, fallback = undefined): string {
   const val = process.env[key];
-  if (required && !val) throw new Error(`No ${key} specified!`);
-  return val;
+  if (val) return val;
+  if (fallback) return fallback;
+  throw new Error(`No ${key} specified!`);
 }
 
 export const discordToken = getEnvVar("DISCORD_TOKEN");
 export const canvasToken = getEnvVar("CANVAS_TOKEN");
-export const databasePath = getEnvVar("DATABASE_PATH", false);
+export const databasePath = getEnvVar("DATABASE_PATH", "database.sqlite");

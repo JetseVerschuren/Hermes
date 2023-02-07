@@ -31,7 +31,7 @@ export const bot = new Client({
 
 const dataSource = new DataSource({
   type: "sqlite",
-  database: databasePath ?? "database.sqlite",
+  database: databasePath,
   synchronize: true,
   entities: [Announcement],
 });
