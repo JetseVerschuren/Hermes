@@ -22,4 +22,18 @@ export class UserService {
       })) !== null
     );
   }
+
+  async insertUser(
+    email: string,
+    discordId: string,
+    name?: string,
+    sub?: string
+  ) {
+    await this.userRepository.insert({
+      email,
+      discordId,
+      name,
+      sub,
+    });
+  }
 }
