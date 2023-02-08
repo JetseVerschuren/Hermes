@@ -1,5 +1,5 @@
 import { Inject, Service } from "typedi";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { Database } from "./Database.js";
 import { Authentication } from "../entities/Authentication.js";
 
@@ -31,5 +31,24 @@ export class AuthenticationService {
       id: attemptId,
       nonce: nonce,
     };
+  }
+
+  async updateAttempt(
+    id: number,
+    nonce: string,
+    token: string
+  ): Promise<string | undefined> {
+    // TODO: Check createdOn is not too long ago
+    const attempt = await this.authenticationRepository.findOneBy({
+      id,
+      nonce,
+      token: IsNull(),
+    });
+    if (!attempt) return undefined;
+
+    attempt.token = token;
+    await attempt.save();
+
+    return attempt.discordId;
   }
 }

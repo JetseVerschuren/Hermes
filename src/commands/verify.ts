@@ -35,11 +35,3 @@ class Verify {
     });
   }
 }
-
-// TODO: Make this a REST handler
-function postToken() {
-  // TODO: Check token for validity
-  // TODO: Find the auth attempts in the DB (and check if it's valid)
-  // TODO: Create new user (throw error if user already linked)
-  // TODO: Add verified role
-}

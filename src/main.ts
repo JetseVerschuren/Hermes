@@ -3,9 +3,11 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client, DIService, typeDiDependencyRegistryEngine } from "discordx";
 import { Canvas } from "./services/Canvas.js";
-import { discordToken } from "./config.js";
+import { discordToken, port } from "./config.js";
 import { Container, Service } from "typedi";
 import { Database } from "./services/Database.js";
+import { Koa } from "@discordx/koa";
+import bodyParser from "koa-bodyparser";
 
 export const bot = new Client({
   // To use only guild command
@@ -67,25 +69,21 @@ bot.on("messageCreate", (message: Message) => {
 
 async function run() {
   const database = DIService.engine.getService(Database);
-   if (!database) throw new Error("Failed to start Database");
+  if (!database) throw new Error("Failed to start Database");
   await database.initialize();
 
-  // The following syntax should be used in the commonjs environment
-  //
-  // await importx(__dirname + "/{events,commands}/**/*.{ts,js}");
-
-  // The following syntax should be used in the ECMAScript environment
   await importx(
-    `${dirname(import.meta.url)}/{events,commands,services}/**/*.{ts,js}`
+    `${dirname(import.meta.url)}/{events,commands,services,api}/**/*.{ts,js}`
   );
 
-  // // Let's start the bot
-  // if (!process.env.BOT_TOKEN) {
-  //   throw Error("Could not find BOT_TOKEN in your environment");
-  // }
-
-  // Log in with your bot token
   await bot.login(discordToken);
+
+  const server = new Koa();
+  server.use(bodyParser());
+  await server.build();
+  server.listen(port, () => {
+    console.log(`api started on port ${port}`);
+  });
 }
 
 run();
