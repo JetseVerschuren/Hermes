@@ -25,24 +25,3 @@ export const courseConfig: CourseConfig = {
     guilds: ["1072100983989076098"],
   },
 };
-
-dotenv.config();
-
-function getEnvVar(key: string, fallback: string): string;
-function getEnvVar(key: string): string;
-
-function getEnvVar(
-  key: string,
-  fallback: string | undefined = undefined
-): string {
-  const val = process.env[key];
-  if (val) return val;
-  if (fallback) return fallback;
-  throw new Error(`No ${key} specified!`);
-}
-
-export const discordToken = getEnvVar("DISCORD_TOKEN");
-export const canvasToken = getEnvVar("CANVAS_TOKEN");
-export const databasePath = getEnvVar("DATABASE_PATH", "database.sqlite");
-export const publicUrl = getEnvVar("PUBLIC_URL", "localhost:3000");
-export const userDomain = getEnvVar("USER_DOMAIN", "utwente.nl");

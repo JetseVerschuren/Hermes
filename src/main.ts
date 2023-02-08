@@ -3,11 +3,11 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client, DIService, typeDiDependencyRegistryEngine } from "discordx";
 import { Canvas } from "./services/Canvas.js";
-import { discordToken, port } from "./config.js";
 import { Container, Service } from "typedi";
 import { Database } from "./services/Database.js";
 import { Koa } from "@discordx/koa";
 import bodyParser from "koa-bodyparser";
+import { Config } from "./services/Config.js";
 
 export const bot = new Client({
   // To use only guild command
@@ -68,21 +68,21 @@ bot.on("messageCreate", (message: Message) => {
 });
 
 async function run() {
-  const database = DIService.engine.getService(Database);
-  if (!database) throw new Error("Failed to start Database");
+  const config = Container.get(Config);
+  const database = Container.get(Database);
   await database.initialize();
 
   await importx(
     `${dirname(import.meta.url)}/{events,commands,services,api}/**/*.{ts,js}`
   );
 
-  await bot.login(discordToken);
+  await bot.login(config.getDiscordToken());
 
   const server = new Koa();
   server.use(bodyParser());
   await server.build();
-  server.listen(port, () => {
-    console.log(`api started on port ${port}`);
+  server.listen(config.getPort(), () => {
+    console.log(`api started on port ${config.getPort()}`);
   });
 }
 
