@@ -2,7 +2,7 @@ import { Inject, Service } from "typedi";
 import { IsNull, Repository } from "typeorm";
 import { Database } from "./Database.js";
 import { Authentication } from "../entities/Authentication.js";
-import {randomBytes} from "crypto";
+import { randomBytes } from "crypto";
 
 @Service()
 export class AuthenticationService {
@@ -18,7 +18,7 @@ export class AuthenticationService {
   async newAttempt(
     discordId: string
   ): Promise<Pick<Authentication, "id" | "nonce">> {
-    const nonce = randomBytes(5).toString('hex');
+    const nonce = randomBytes(5).toString("hex");
 
     const attemptId: number = (
       await this.authenticationRepository.insert({
