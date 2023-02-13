@@ -18,7 +18,7 @@ export class AnnouncementService {
     return (
       await this.announcementRepository.findOne({
         where: { postedAt: Not(IsNull()) },
-        order: { postedAt: "ASC" },
+        order: { postedAt: "DESC" },
       })
     )?.postedAt;
   }
