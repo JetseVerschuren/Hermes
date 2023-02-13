@@ -60,11 +60,19 @@ bot.once("ready", async () => {
 });
 
 bot.on("interactionCreate", (interaction: Interaction) => {
-  bot.executeInteraction(interaction);
+  try {
+    bot.executeInteraction(interaction);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 bot.on("messageCreate", (message: Message) => {
-  bot.executeCommand(message);
+  try {
+    bot.executeCommand(message);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 async function run() {
