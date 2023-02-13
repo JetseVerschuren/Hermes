@@ -18,7 +18,7 @@ export class Logger {
       .setTimestamp(new Date()) // TODO: Check if DC has a deleted on timestamp
       .setAuthor({
         name: message.author?.tag ?? "Unknown",
-        iconURL: message.author?.avatarURL() ?? "",
+        iconURL: message.author?.avatarURL() ?? undefined,
       })
       .setFooter({
         text: `ID: ${message.author?.id}`,
@@ -58,7 +58,7 @@ export class Logger {
       .setTimestamp(new Date())
       .setAuthor({
         name: oldMessage.author?.tag ?? "Unknown",
-        iconURL: oldMessage.author?.avatarURL() ?? "",
+        iconURL: oldMessage.author?.avatarURL() ?? undefined,
       })
       .setFooter({
         text: `ID: ${oldMessage.author?.id}`,
