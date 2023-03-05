@@ -32,7 +32,13 @@ export class Canvas {
   private bot!: Client;
 
   ready() {
-    setInterval(this.onInterval.bind(this), 60 * 1000);
+    setInterval(() => {
+      try {
+        return this.onInterval();
+      } catch (e) {
+        console.error(e);
+      }
+    }, 60 * 1000);
   }
 
   async onInterval() {
