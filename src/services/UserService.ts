@@ -29,17 +29,14 @@ export class UserService {
     });
   }
 
-  async insertUser(
-    email: string,
-    discordId: string,
-    name?: string,
-    sub?: string
-  ) {
-    await this.userRepository.insert({
-      email,
-      discordId,
-      name,
-      sub,
-    });
+  async setDiscordId(email: string, discordId: string) {
+    await this.userRepository.update(
+      {
+        email,
+      },
+      {
+        discordId,
+      }
+    );
   }
 }

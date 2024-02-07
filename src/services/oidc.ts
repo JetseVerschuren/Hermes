@@ -72,12 +72,6 @@ export class OIDC {
       idToken
     );
     if (!discordId) throw new Error("Invalid state/nonce combination");
-    await this.userService.insertUser(
-      decoded.email,
-      discordId,
-      decoded.name,
-      decoded.sub
-    );
-    // TODO: Add verified role
+    await this.userService.setDiscordId(decoded.email, discordId);
   }
 }
