@@ -1,5 +1,5 @@
 import { Client } from "discordx";
-import { courseConfig, guildConfig } from "../config.js";
+import { courseCodes, guildConfig } from "../config.js";
 import { EmbedBuilder, TextChannel } from "discord.js";
 import fetch from "node-fetch";
 import { htmlToMarkdown } from "../htmlToMarkdown.js";
@@ -44,7 +44,7 @@ export class Canvas {
   async onInterval() {
     console.log("Checking Canvas announcements");
     const announcements = await this.fetchAnnouncements(
-      Object.keys(courseConfig),
+      courseCodes,
       await this.announcementRepository.lastMessageDate()
     );
 
@@ -66,14 +66,12 @@ export class Canvas {
         authorAvatarImageUrl: announcement.author.avatarImageUrl,
       });
 
-      const guilds = courseConfig[announcement.contextCode]?.guilds;
-      if (!guilds) continue;
-      // TODO: Check if it's an old announcement
       await this.publishMessage(
         announcement,
-        guilds
-          .map((guild) => guildConfig[guild]?.announcementChannel)
-          .filter((channel): channel is string => !!channel)
+        Object.entries(guildConfig)
+          .filter(([, guild]) => guild.course === announcement.contextCode)
+          .map(([guildId, _]) => guildConfig[guildId]?.announcementChannel)
+          .filter((channel): channel is string => typeof channel === "string")
       );
     }
   }

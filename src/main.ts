@@ -59,17 +59,17 @@ bot.once("ready", async () => {
   console.log("Bot started");
 });
 
-bot.on("interactionCreate", (interaction: Interaction) => {
+bot.on("interactionCreate", async (interaction: Interaction) => {
   try {
-    bot.executeInteraction(interaction);
+    await bot.executeInteraction(interaction);
   } catch (e) {
     console.error(e);
   }
 });
 
-bot.on("messageCreate", (message: Message) => {
+bot.on("messageCreate", async (message: Message) => {
   try {
-    bot.executeCommand(message);
+    await bot.executeCommand(message);
   } catch (e) {
     console.error(e);
   }

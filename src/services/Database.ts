@@ -7,6 +7,7 @@ import { Repository } from "typeorm/repository/Repository";
 import { Authentication } from "../entities/Authentication.js";
 import { User } from "../entities/User.js";
 import { Config } from "./Config.js";
+import { Enrollment } from "../entities/Enrollment.js";
 
 @Service()
 export class Database {
@@ -20,7 +21,7 @@ export class Database {
       type: "sqlite",
       database: config.getDatabasePath(),
       synchronize: true,
-      entities: [Announcement, User, Authentication],
+      entities: [Announcement, User, Authentication, Enrollment],
     });
   }
 

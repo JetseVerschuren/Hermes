@@ -8,9 +8,9 @@ export class User {
   @Column({ unique: true })
   discordId!: string;
 
-  @Column({ nullable: true })
-  name!: string;
+  @Column({ nullable: true, type: "varchar" })
+  name!: string | null;
 
-  @Column({ nullable: true })
-  sub!: string;
+  @Column({ nullable: true, type: "varchar" })
+  sub!: string | null;
 }

@@ -23,6 +23,12 @@ export class UserService {
     );
   }
 
+  async getUserFromUsername(discordId: string): Promise<User | null> {
+    return await this.userRepository.findOneBy({
+      discordId,
+    });
+  }
+
   async insertUser(
     email: string,
     discordId: string,
