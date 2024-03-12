@@ -43,7 +43,7 @@ class Math {
       type: ApplicationCommandOptionType.String,
     })
     input: string,
-    interaction: CommandInteraction
+    interaction: CommandInteraction,
   ) {
     const node = html.convert(input, {
       display: false,

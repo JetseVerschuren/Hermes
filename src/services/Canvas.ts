@@ -76,16 +76,6 @@ export class Canvas {
     }
   }
 
-      await this.publishMessage(
-        announcement,
-        Object.entries(guildConfig)
-          .filter(([, guild]) => guild.course === announcement.contextCode)
-          .map(([guildId, _]) => guildConfig[guildId]?.announcementChannel)
-          .filter((channel): channel is string => typeof channel === "string")
-      );
-    }
-  }
-
   async publishMessage(announcement: AnnouncementObject, channels: string[]) {
     // TODO: The announcement can contain attachments, perhaps send to to DC as well
     const embed = new EmbedBuilder()

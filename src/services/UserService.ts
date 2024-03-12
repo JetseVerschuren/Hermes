@@ -9,7 +9,7 @@ export class UserService {
 
   constructor(
     @Inject()
-    private readonly database: Database
+    private readonly database: Database,
   ) {
     this.userRepository = this.database.getRepository(User);
   }
@@ -36,7 +36,7 @@ export class UserService {
       },
       {
         discordId,
-      }
+      },
     );
   }
 }

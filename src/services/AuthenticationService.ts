@@ -10,13 +10,13 @@ export class AuthenticationService {
 
   constructor(
     @Inject()
-    private readonly database: Database
+    private readonly database: Database,
   ) {
     this.authenticationRepository = this.database.getRepository(Authentication);
   }
 
   async newAttempt(
-    discordId: string
+    discordId: string,
   ): Promise<Pick<Authentication, "id" | "nonce">> {
     const nonce = randomBytes(5).toString("hex");
 
@@ -36,7 +36,7 @@ export class AuthenticationService {
   async updateAttempt(
     id: number,
     nonce: string,
-    token: string
+    token: string,
   ): Promise<string | undefined> {
     // TODO: Check createdOn is not too long ago
     const attempt = await this.authenticationRepository.findOneBy({

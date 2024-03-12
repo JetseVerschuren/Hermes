@@ -9,7 +9,7 @@ export class AnnouncementService {
 
   constructor(
     @Inject()
-    private readonly database: Database
+    private readonly database: Database,
   ) {
     this.announcementRepository = this.database.getRepository(Announcement);
   }

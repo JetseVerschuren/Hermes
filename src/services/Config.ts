@@ -30,7 +30,7 @@ export class Config {
     // @ts-ignore
     this.config = {};
     for (const [key, [envName, defaultValue]] of Object.entries(
-      defaultConfig
+      defaultConfig,
     )) {
       const value: string | number | undefined | null =
         process.env[envName] ?? defaultValue;

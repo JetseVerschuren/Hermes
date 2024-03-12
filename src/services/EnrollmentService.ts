@@ -10,7 +10,7 @@ export class EnrollmentService {
 
   constructor(
     @Inject()
-    private readonly database: Database
+    private readonly database: Database,
   ) {
     this.enrollmentRepository = this.database.getRepository(Enrollment);
   }

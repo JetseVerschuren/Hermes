@@ -28,7 +28,7 @@ export class OIDC {
     // https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc
 
     const url = new URL(
-      "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize"
+      "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize",
     );
     const params = url.searchParams;
     params.append("client_id", this.config.getOIDCClientId());
@@ -69,7 +69,7 @@ export class OIDC {
     const discordId = await this.authenticationService.updateAttempt(
       attemptId,
       decoded.nonce,
-      idToken
+      idToken,
     );
     if (!discordId) throw new Error("Invalid state/nonce combination");
     await this.userService.setDiscordId(decoded.email, discordId);

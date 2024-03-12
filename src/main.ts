@@ -81,7 +81,7 @@ async function run() {
   await database.initialize();
 
   await importx(
-    `${dirname(import.meta.url)}/{events,commands,services,api}/**/*.{ts,js}`
+    `${dirname(import.meta.url)}/{events,commands,services,api}/**/*.{ts,js}`,
   );
 
   await bot.login(config.getDiscordToken());

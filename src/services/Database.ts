@@ -15,7 +15,7 @@ export class Database {
 
   constructor(
     @Inject()
-    private readonly config: Config
+    private readonly config: Config,
   ) {
     this.dataSource = new DataSource({
       type: "sqlite",
@@ -26,7 +26,7 @@ export class Database {
   }
 
   getRepository<Entity extends ObjectLiteral>(
-    target: EntityTarget<Entity>
+    target: EntityTarget<Entity>,
   ): Repository<Entity> {
     return this.dataSource.getRepository(target);
   }
