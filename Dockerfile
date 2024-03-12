@@ -35,7 +35,7 @@ COPY --from=build-runner /tmp/app/build /app/build
 EXPOSE 3000
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s \
-    CMD curl --fail http://localhost:$PORT/auth/test || exit 1
+    CMD wget -q --tries=1 -O /dev/null http://localhost:3000/auth/test || exit 1
 
 # Start bot
 CMD [ "npm", "run", "start" ]
