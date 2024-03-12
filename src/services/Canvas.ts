@@ -1,6 +1,6 @@
 import { Client } from "discordx";
 import { courseCodes, guildConfig } from "../config.js";
-import { EmbedBuilder, TextChannel } from "discord.js";
+import { EmbedBuilder, Snowflake, TextChannel } from "discord.js";
 import fetch from "node-fetch";
 import { htmlToMarkdown } from "../htmlToMarkdown.js";
 import { Inject, Service } from "typedi";
@@ -45,7 +45,7 @@ export class Canvas {
     console.log("Checking Canvas announcements");
     const announcements = await this.fetchAnnouncements(
       courseCodes,
-      await this.announcementRepository.lastMessageDate()
+      await this.announcementRepository.lastMessageDate(),
     );
 
     for (const announcement of announcements) {
@@ -54,6 +54,14 @@ export class Canvas {
         console.log(`Duplicate announcement: ${announcement.id}`);
         continue;
       }
+
+      await this.publishMessage(
+        announcement,
+        Object.entries(guildConfig)
+          .filter(([, guild]) => guild.course === announcement.contextCode)
+          .map(([guildId, _]) => guildConfig[guildId]?.announcementChannel)
+          .filter((channel): channel is string => typeof channel === "string"),
+      );
 
       await this.announcementRepository.insert({
         id: announcement.id,
@@ -65,6 +73,8 @@ export class Canvas {
         authorDisplayName: announcement.author.displayName,
         authorAvatarImageUrl: announcement.author.avatarImageUrl,
       });
+    }
+  }
 
       await this.publishMessage(
         announcement,
@@ -79,26 +89,38 @@ export class Canvas {
   async publishMessage(announcement: AnnouncementObject, channels: string[]) {
     // TODO: The announcement can contain attachments, perhaps send to to DC as well
     const embed = new EmbedBuilder()
-      .setAuthor({
-        name: announcement.author.displayName,
-        iconURL: announcement.author.avatarImageUrl,
-      })
       .setTitle(announcement.title)
       .setDescription(htmlToMarkdown(announcement.message))
       .setURL(announcement.url)
       .setTimestamp(announcement.postedAt);
 
     for (const channelId of channels) {
-      const channel = await this.bot.channels.fetch(channelId);
+      const channel = await this.bot.channels.fetch(channelId as Snowflake);
       if (!channel) continue;
-      // TODO: Find a better solution than casting
-      await (channel as TextChannel).send({ embeds: [embed] });
+      const textChannel = channel as TextChannel;
+      const webhook = (await textChannel.fetchWebhooks()).first();
+      if (webhook != undefined) {
+        await webhook.send({
+          embeds: [embed],
+          username: announcement.author.displayName,
+          avatarURL: announcement.author.avatarImageUrl,
+        });
+      } else {
+        await textChannel.send({
+          embeds: [
+            embed.setAuthor({
+              name: announcement.author.displayName,
+              iconURL: announcement.author.avatarImageUrl,
+            }),
+          ],
+        });
+      }
     }
   }
 
   async fetchAnnouncements(
     courseCodes: string[],
-    startDate: Date | null = null
+    startDate: Date | null = null,
   ): Promise<AnnouncementObject[]> {
     // (see https://canvas.instructure.com/doc/api/announcements.html for more details)
     const url = new URL("https://canvas.utwente.nl/api/v1/announcements");
@@ -108,7 +130,10 @@ export class Canvas {
     }
     // Only include published announcements, just in case the token has those permissions
     params.append("active_only", "true");
-    if (startDate) params.append("start_date", startDate.toISOString());
+    if (startDate) {
+      params.append("start_date", startDate.toISOString());
+      params.append("end_date", new Date().toISOString());
+    }
     params.append("access_token", this.config.getCanvasToken());
 
     const response = await fetch(url.toString(), { method: "GET", body: null });
@@ -119,7 +144,7 @@ export class Canvas {
     if (!(json instanceof Array)) {
       console.error(
         `INVALID RESPONSE FROM API. Request: ${url.toString()}, response: `,
-        response
+        response,
       );
       return []; //TODO: Make errors more explicit.
     }
@@ -137,7 +162,7 @@ export class Canvas {
           },
           postedAt: new Date(Date.parse(raw.posted_at)),
           contextCode: raw.context_code,
-        } as AnnouncementObject)
+        }) as AnnouncementObject,
     );
   }
 }
