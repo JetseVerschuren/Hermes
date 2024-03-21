@@ -28,6 +28,7 @@ COPY package.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install --production --frozen-lockfile
+RUN yarn add sharp --ignore-engines
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
