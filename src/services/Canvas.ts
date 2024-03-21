@@ -6,6 +6,7 @@ import { htmlToMarkdown } from "../htmlToMarkdown.js";
 import { Inject, Service } from "typedi";
 import { AnnouncementService } from "./AnnouncementService.js";
 import { Config } from "./Config.js";
+import randomColor from "randomcolor";
 
 type AnnouncementObject = {
   id: number;
@@ -15,6 +16,7 @@ type AnnouncementObject = {
   author: {
     displayName: string;
     avatarImageUrl: string;
+    id: number;
   };
   postedAt: Date;
   contextCode: string;
@@ -78,17 +80,24 @@ export class Canvas {
 
   async publishMessage(announcement: AnnouncementObject, channels: string[]) {
     // TODO: The announcement can contain attachments, perhaps send to to DC as well
+    const color = randomColor({
+      luminosity: 'bright',
+      seed: announcement.author.displayName,
+    }) as `#${string}`;
+
     const embed = new EmbedBuilder()
       .setTitle(announcement.title)
       .setDescription(htmlToMarkdown(announcement.message))
       .setURL(announcement.url)
-      .setTimestamp(announcement.postedAt);
+      .setTimestamp(announcement.postedAt)
+      .setColor(color);
 
     for (const channelId of channels) {
       const channel = await this.bot.channels.fetch(channelId as Snowflake);
       if (!channel) continue;
       const textChannel = channel as TextChannel;
       const webhook = (await textChannel.fetchWebhooks()).first();
+
       if (webhook != undefined) {
         await webhook.send({
           embeds: [embed],
