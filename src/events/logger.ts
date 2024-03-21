@@ -46,13 +46,14 @@ export class Logger {
     if (!oldMessage.guild) return;
     const logChannel = guildConfig[oldMessage.guild.id]?.logChannel;
     if (!logChannel) return;
+    if (oldMessage.author?.bot) return;
     const embed = new EmbedBuilder()
       .setURL(oldMessage.url)
       .setTitle(
         `Message edited in #${(oldMessage.channel as TextChannel).name}`,
       )
       .setDescription(
-        `**Before:** ${oldMessage.content}:\n**+After:** ${newMessage.content}`,
+        `**Before:** ${oldMessage.content}\n**+After:** ${newMessage.content}`,
       )
       .setColor(4359924)
       .setTimestamp(new Date())
